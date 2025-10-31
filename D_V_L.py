@@ -5,7 +5,7 @@ import sklearn.metrics as skmetrics
 
 #ready data
 df = pd.read_csv(
-    r"C:\Users\Sverr\Desktop\Datasets\LC50\qsar_aquatic_toxicity.csv",
+    r"qsar_aquatic_toxicity.csv",
     delimiter=";",
     names = ["TPSA", "SAacc", "H050", "MLOGP", "RDCHI", "GATS1P", "nN", "C040", "LC50"]
 )
