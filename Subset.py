@@ -7,7 +7,7 @@ from sklearn import feature_selection as fs
 
 
 df = pd.read_csv(
-    r"qsar_aquatic_toxicity.csv",
+    r"LC50_regression_models\qsar_aquatic_toxicity.csv",
     delimiter=";",
     names = ["TPSA", "SAacc", "H050", "MLOGP", "RDCHI", "GATS1P", "nN", "C040", "LC50"])
 
