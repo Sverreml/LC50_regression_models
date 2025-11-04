@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import sklearn.linear_model as skl
 import sklearn.model_selection as skm
-from sklearn.metrics import make_scorer
+import sklearn.metrics as skmetrics
 from sklearn import feature_selection as fs
 
 
@@ -96,3 +96,40 @@ print("Forward AIC selected variables: ", var_sel_for_AIC_support)
 print("Backward AIC selected variables: ", var_sel_back_AIC_support)
 print("Forward BIC selected variables: ", var_sel_for_BIC_support)
 print("Backward BIC selected variables: ", var_sel_back_BIC_support)
+
+#error
+model_AIC_for = skl.LinearRegression()
+model_AIC_for.fit(X_train[var_sel_for_AIC_support], Y_train)
+Y_train_pred_AIC_for = model_AIC_for.predict(X_train[var_sel_for_AIC_support])
+Y_test_pred_AIC_for = model_AIC_for.predict(X_test[var_sel_for_AIC_support])
+train_mse_AIC_for = skmetrics.mean_squared_error(Y_train, Y_train_pred_AIC_for)
+test_mse_AIC_for = skmetrics.mean_squared_error(Y_test, Y_test_pred_AIC_for) 
+print(f"Forward AIC Train MSE: {train_mse_AIC_for:.4f}")
+print(f"Forward AIC Test MSE: {test_mse_AIC_for:.4f}")
+
+model_AIC_back = skl.LinearRegression()
+model_AIC_back.fit(X_train[var_sel_back_AIC_support], Y_train)
+Y_train_pred_AIC_back = model_AIC_back.predict(X_train[var_sel_back_AIC_support])
+Y_test_pred_AIC_back = model_AIC_back.predict(X_test[var_sel_back_AIC_support])
+train_mse_AIC_back = skmetrics.mean_squared_error(Y_train, Y_train_pred_AIC_back)
+test_mse_AIC_back = skmetrics.mean_squared_error(Y_test, Y_test_pred_AIC_back) 
+print(f"Backward AIC Train MSE: {train_mse_AIC_back:.4f}")
+print(f"Backward AIC Test MSE: {test_mse_AIC_back:.4f}")
+
+model_BIC_for = skl.LinearRegression()
+model_BIC_for.fit(X_train[var_sel_for_BIC_support], Y_train)
+Y_train_pred_BIC_for = model_BIC_for.predict(X_train[var_sel_for_BIC_support])
+Y_test_pred_BIC_for = model_BIC_for.predict(X_test[var_sel_for_BIC_support])
+train_mse_BIC_for = skmetrics.mean_squared_error(Y_train, Y_train_pred_BIC_for)
+test_mse_BIC_for = skmetrics.mean_squared_error(Y_test, Y_test_pred_BIC_for) 
+print(f"Forward BIC Train MSE: {train_mse_BIC_for:.4f}")
+print(f"Forward BIC Test MSE: {test_mse_BIC_for:.4f}")
+
+model_BIC_back = skl.LinearRegression()
+model_BIC_back.fit(X_train[var_sel_back_BIC_support], Y_train)
+Y_train_pred_BIC_back = model_BIC_back.predict(X_train[var_sel_back_BIC_support])
+Y_test_pred_BIC_back = model_BIC_back.predict(X_test[var_sel_back_BIC_support])
+train_mse_BIC_back = skmetrics.mean_squared_error(Y_train, Y_train_pred_BIC_back)
+test_mse_BIC_back = skmetrics.mean_squared_error(Y_test, Y_test_pred_BIC_back) 
+print(f"Backward BIC Train MSE: {train_mse_BIC_back:.4f}")
+print(f"Backward BIC Test MSE: {test_mse_BIC_back:.4f}")

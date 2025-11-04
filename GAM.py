@@ -38,3 +38,6 @@ plt.axvline(x=best_penalty, color='r', linestyle='--', label=f'Best Penalty: {be
 plt.title('GAM Penalty vs MSE')
 plt.legend()
 plt.show()
+
+print(f"Gam train MSE with best penalty ({best_penalty:.4f}): {train_error[min_index]:.4f}")
+print(f"Gam test MSE with best penalty ({best_penalty:.4f}): {test_error[min_index]:.4f}")

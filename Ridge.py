@@ -82,3 +82,11 @@ ax.set_ylabel('Mean Squared Error')
 ax.set_title('Ridge Regression: Alpha vs MSE')
 ax.legend()
 plt.show()
+
+#error
+Y_test_pred_cv = ridge.predict(X_test)
+Y_test_pred_bootstrap = bootstrap.predict(X_test)
+mse_cv = np.mean((Y_test - Y_test_pred_cv)**2)
+mse_bootstrap = np.mean((Y_test - Y_test_pred_bootstrap)**2)
+print(f"Ridge Test MSE (cross-validation alpha): {mse_cv:.4f}")
+print(f"Ridge Test MSE (bootstrap alpha): {mse_bootstrap:.4f}")
