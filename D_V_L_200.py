@@ -61,9 +61,13 @@ for i in range(200):
 lower = min(min(Lin_train_error), min(Lin_test_error), min(dum_train_error), min(dum_test_error))
 upper = max(max(Lin_train_error), max(Lin_test_error), max(dum_train_error), max(dum_test_error))
 bins = np.linspace(lower, upper, 100)
+Lin_train_error_mean = np.mean(Lin_train_error)
+Lin_test_error_mean = np.mean(Lin_test_error)
+dum_train_error_mean = np.mean(dum_train_error)
+dum_test_error_mean = np.mean(dum_test_error)
 
+#plotting
 fig, axs = plt.subplots(2, 2, sharey=True, tight_layout=True)
-#TODO Add means (and std?) for each plot
 axs[0,0].set_title("Linear Effects Training MSE")
 axs[0,1].set_title("Linear Effects Test MSE")
 axs[1,0].set_title("Dummy Encoding Training MSE")
@@ -72,4 +76,20 @@ axs[0,0].hist(Lin_train_error, bins)
 axs[0,1].hist(Lin_test_error, bins)
 axs[1,0].hist(dum_train_error, bins)
 axs[1,1].hist(dum_test_error, bins)
+axs[0,0].axvline(Lin_train_error_mean, color='r', linestyle='--', label=f'mean: {Lin_train_error_mean:.4f}')
+axs[0,1].axvline(Lin_test_error_mean, color='r', linestyle='--', label=f'mean: {Lin_test_error_mean:.4f}')
+axs[1,0].axvline(dum_train_error_mean, color='r', linestyle='--', label=f'mean: {dum_train_error_mean:.4f}')
+axs[1,1].axvline(dum_test_error_mean, color='r', linestyle='--', label=f'mean: {dum_test_error_mean:.4f}')
+for ax in axs.flat:
+    ax.set_xlabel('Mean Squared Error')
+    ax.set_ylabel('Frequency')
+    ax.legend()
+
 plt.show()
+
+#t-test
+from scipy import stats
+t_train, p_train = stats.ttest_ind(Lin_train_error, dum_train_error)
+t_test, p_test = stats.ttest_ind(Lin_test_error, dum_test_error)
+print("Train t-test: t = {:.5f}, p = {:.5f}".format(t_train, p_train))
+print("Test t-test: t = {:.5f}, p = {:.5f}".format(t_test, p_test))

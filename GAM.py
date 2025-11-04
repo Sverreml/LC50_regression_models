@@ -15,8 +15,26 @@ X_train, X_test, Y_train, Y_test = skm.train_test_split(df[["TPSA", "SAacc", "H0
                                                         df["LC50"],
                                                         random_state=0,
                                                         test_size=0.33)
-# fit GAM model
-gam = GAM(s(0) + s(1) + s(2) + s(3) + s(4) + s(5) + s(6) + s(7))
-gam.fit(X_train, Y_train)
 
-gam.summary()
+penalties = np.logspace(-4, 1, 100)
+test_error = []
+train_error = []
+# fit GAM model
+for i in penalties:
+    gam = GAM(s(0, lam=i) + s(1, lam=i) + s(2, lam=i) + s(3, lam=i) + s(4, lam=i) + s(5, lam=i) + s(6, lam=i) + s(7, lam=i))
+    gam.fit(X_train, Y_train)
+    Y_pred = gam.predict(X_test)
+    test_error.append(np.mean((Y_test - Y_pred) ** 2))
+    train_error.append(np.mean((Y_train - gam.predict(X_train))**2))
+
+min_index = test_error.index(min(test_error))
+best_penalty = penalties[min_index]
+plt.plot(penalties, test_error, label = "Test error")
+plt.plot(penalties, train_error, label = "Train error")
+plt.xscale('log')
+plt.xlabel('Penalty (lambda)')
+plt.ylabel('Mean Squared Error')
+plt.axvline(x=best_penalty, color='r', linestyle='--', label=f'Best Penalty: {best_penalty:.4f}')
+plt.title('GAM Penalty vs MSE')
+plt.legend()
+plt.show()

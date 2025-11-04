@@ -2,6 +2,8 @@ import pandas as pd
 import sklearn.linear_model as skl
 import sklearn.model_selection as skm
 import sklearn.metrics as skmetrics
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
 
 #ready data
 df = pd.read_csv(
@@ -27,17 +29,14 @@ X_test_lin = X_test.drop(columns = ["H050_d","C040_d","nN_d"])
 Y_train_lin = Y_train.drop(columns = ["H050_d","C040_d","nN_d"])
 Y_test_lin = Y_test.drop(columns = ["H050_d","C040_d","nN_d"])
 
-lin_eff = skl.LinearRegression()
-lin_eff.fit(X_train_lin, Y_train_lin)
+lin_eff = smf.ols(formula='LC50 ~ TPSA + SAacc + H050 + MLOGP + RDCHI + GATS1P + nN + C040', data=pd.concat([X_train_lin, Y_train_lin], axis=1))
+lin_eff_fit = lin_eff.fit()
+Lin_eff_test = lin_eff_fit.predict(X_test_lin)
+lin_eff_train = lin_eff_fit.predict(X_train_lin)
 
-Lin_eff_test = lin_eff.predict(X_test_lin)
-lin_eff_train = lin_eff.predict(X_train_lin)
+lin_eff_summary = lin_eff_fit.summary()
+print(lin_eff_summary)
 
-print("--------Linear encoding--------")
-
-print("Linear effects coefs: ", [ '%.4f' % elem for elem in lin_eff.coef_ ])
-print("Linear effects Training MSE: {:.4}".format(skmetrics.mean_squared_error(lin_eff_train, Y_train_lin)))
-print("Linear effects Test MSE: {:.4}".format(skmetrics.mean_squared_error(Y_test_lin, Lin_eff_test)))
 
 
 #Dummy encoding model
@@ -47,13 +46,8 @@ X_test_dum = X_test.drop(columns = ["H050","C040","nN"])
 Y_train_dum = Y_train.drop(columns = ["H050","C040","nN"])
 Y_test_dum = Y_test.drop(columns = ["H050","C040","nN"])
 
-dum_enc = skl.LinearRegression()
-dum_enc.fit(X_train_dum, Y_train_dum)
+dum_enc = smf.ols(formula='LC50 ~ TPSA + SAacc + H050_d + MLOGP + RDCHI + GATS1P + nN_d + C040_d', data=pd.concat([X_train_dum, Y_train_dum], axis=1))
+dum_enc_fit = dum_enc.fit()
 
-dum_enc_test = dum_enc.predict(X_test_dum)
-dum_emc_train = dum_enc.predict(X_train_dum)
-
-print("--------Dummy encoding--------")
-print("Dummy enconding coefs: ", [ '%.4f' % elem for elem in dum_enc.coef_ ])
-print("Dummy enconding Training MSE: {:.4}".format(skmetrics.mean_squared_error(dum_emc_train, Y_train_dum)))
-print("Dummy enconding Test MSE: {:.4}".format(skmetrics.mean_squared_error(Y_test_dum, dum_enc_test)))
+lin_eff_summary = dum_enc_fit.summary()
+print(lin_eff_summary)

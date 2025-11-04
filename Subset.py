@@ -24,7 +24,7 @@ def AIC(estimator, X, y):
     y_pred = estimator.predict(X)
     rss = np.sum((y - y_pred) ** 2)
     k = n_features
-    aic = 2*k - 2 * np.log(rss / n_samples)
+    aic = 2*k + n_samples * np.log(rss / n_samples)
     return -aic
 
 def BIC(estimator, X, y):
@@ -32,7 +32,7 @@ def BIC(estimator, X, y):
     y_pred = estimator.predict(X)
     rss = np.sum((y - y_pred) ** 2)
     k = n_features
-    bic = k * np.log(k) - 2 * np.log(rss / n_samples)
+    bic = k * np.log(n_samples) + n_samples * np.log(rss / n_samples)
     return -bic
 
 

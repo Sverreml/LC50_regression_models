@@ -21,10 +21,9 @@ Y = df["LC50"]
 scaler = StandardScaler()
 X = scaler.fit_transform(X)
 
-X_train, X_test, Y_train, Y_test = skm.train_test_split(df[["TPSA", "SAacc", "H050", "MLOGP", "RDCHI", "GATS1P", "nN", "C040"]],
-                                                        df["LC50"],
+X_train, X_test, Y_train, Y_test = skm.train_test_split(X,
+                                                        Y,
                                                         random_state=0)
-
 
 alphas = np.logspace(-4, 3, 500)
 
@@ -38,6 +37,10 @@ for a in alphas:
 min_index = ridge_error.index(min(ridge_error))
 best_alpha = alphas[min_index]
 
+ridge = skl.Ridge(alpha=best_alpha,  max_iter=10000)
+ridge.fit(X_train, Y_train)
+print(ridge.coef_)
+
 #Bootstrap
 ridge_bootstrap_errors = []
 n_bootstraps = 100
@@ -49,14 +52,23 @@ for i in range(alphas.shape[0]):
     bootstrap_errors = []
     for _ in range(n_bootstraps):
         X_resampled, Y_resampled = resample(X_train, Y_train)
+        mask = np.isin(range(len(X_train)), resample(range(len(X_train)), replace=True), invert=True)
+        X_oob, Y_oob = X_train[mask], Y_train[mask]
         ridge.fit(X_resampled, Y_resampled)
-        Y_pred = ridge.predict(X_test)
-        mse = np.mean((Y_test - Y_pred) ** 2)
+        Y_pred = ridge.predict(X_oob)
+        mse = np.mean((Y_oob - Y_pred)**2)
         bootstrap_errors.append(mse)
     ridge_bootstrap_errors.append(np.mean(bootstrap_errors))
 
 min_bootstrap_index = ridge_bootstrap_errors.index(min(ridge_bootstrap_errors))
 best_bootstrap_alpha = alphas[min_bootstrap_index] 
+
+bootstrap = skl.Ridge(alpha=best_bootstrap_alpha, max_iter=10000)
+bootstrap.fit(X_train, Y_train)
+print(bootstrap.coef_)
+
+print("minimal MSE (cross-validation): ", min(ridge_error))
+print("minimal MSE (bootstrap): ", min(ridge_bootstrap_errors))
 
 #Plotting
 fig, ax = plt.subplots()
