@@ -19,20 +19,21 @@ X_train, X_test, Y_train, Y_test = skm.train_test_split(df[["TPSA", "SAacc", "H0
                                                         random_state=0,
                                                         test_size=0.33)
 
+
 def AIC(estimator, X, y):
-    n_samples, n_features = X.shape
+    n_samples = X.shape[0]
     y_pred = estimator.predict(X)
     rss = np.sum((y - y_pred) ** 2)
-    k = n_features
-    aic = 2*k + n_samples * np.log(rss / n_samples)
+    k = X.shape[1] + 1
+    aic = n_samples * np.log(rss / n_samples) + 2 * k
     return -aic
 
 def BIC(estimator, X, y):
-    n_samples, n_features = X.shape
+    n_samples = X.shape[0]
     y_pred = estimator.predict(X)
     rss = np.sum((y - y_pred) ** 2)
-    k = n_features
-    bic = k * np.log(n_samples) + n_samples * np.log(rss / n_samples)
+    k = X.shape[1] + 1
+    bic = n_samples * np.log(rss / n_samples) + k * np.log(n_samples)
     return -bic
 
 
@@ -40,7 +41,8 @@ def BIC(estimator, X, y):
 var_sel_for_AIC = fs.SequentialFeatureSelector(
         Linear_model,
         direction="forward",
-        scoring = AIC
+        scoring = AIC,
+        cv=5
         )
 
 var_sel_for_AIC.fit(X_train, Y_train)
@@ -54,7 +56,8 @@ for i in range(len(var_sel_for_AIC.get_support())):
 var_sel_back_AIC = fs.SequentialFeatureSelector(
         Linear_model,
         direction="backward",
-        scoring = AIC
+        scoring = AIC,
+        cv=5
         )
 
 var_sel_back_AIC.fit(X_train, Y_train)
@@ -68,7 +71,8 @@ for i in range(len(var_sel_back_AIC.get_support())):
 var_sel_for_BIC = fs.SequentialFeatureSelector(
         Linear_model,
         direction="forward",
-        scoring = BIC
+        scoring = BIC,
+        cv=5
         )
 
 var_sel_for_BIC.fit(X_train, Y_train)
@@ -82,7 +86,8 @@ for i in range(len(var_sel_for_BIC.get_support())):
 var_sel_back_BIC = fs.SequentialFeatureSelector(
         Linear_model,
         direction="backward",
-        scoring = BIC
+        scoring = BIC,
+        cv=5
         )
 
 var_sel_back_BIC.fit(X_train, Y_train)
@@ -98,6 +103,15 @@ print("Forward BIC selected variables: ", var_sel_for_BIC_support)
 print("Backward BIC selected variables: ", var_sel_back_BIC_support)
 
 #error
+print(X_train.shape)
+full_model = skl.LinearRegression()
+full_model.fit(X_train, Y_train)
+Y_train_pred_full = full_model.predict(X_train)
+Y_test_pred_full = full_model.predict(X_test)
+train_mse_full = skmetrics.mean_squared_error(Y_train, Y_train_pred_full)
+test_mse_full = skmetrics.mean_squared_error(Y_test, Y_test_pred_full)
+print(f"Full model - Train MSE: {train_mse_full:.4f}, Test MSE: {test_mse_full:.4f}")
+
 model_AIC_for = skl.LinearRegression()
 model_AIC_for.fit(X_train[var_sel_for_AIC_support], Y_train)
 Y_train_pred_AIC_for = model_AIC_for.predict(X_train[var_sel_for_AIC_support])

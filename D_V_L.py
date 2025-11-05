@@ -18,7 +18,7 @@ df.insert(10, "C040_d", (df["C040"] > 0).astype(int))
 X = df[["TPSA", "SAacc", "H050","H050_d", "MLOGP", "RDCHI", "GATS1P", "nN", "nN_d", "C040", "C040_d"]]
 Y = df["LC50"]
 
-X_train, X_test, Y_train, Y_test = skm.train_test_split(X, Y, random_state=0, test_size=0.66)
+X_train, X_test, Y_train, Y_test = skm.train_test_split(X, Y, random_state=0, test_size=0.33)
 
 #Linear effect model
 X_train_lin = X_train.drop(columns = ["H050_d","C040_d","nN_d"])
@@ -26,6 +26,7 @@ X_test_lin = X_test.drop(columns = ["H050_d","C040_d","nN_d"])
 
 Y_train_lin = Y_train.drop(columns = ["H050_d","C040_d","nN_d"])
 Y_test_lin = Y_test.drop(columns = ["H050_d","C040_d","nN_d"])
+print(X_train_lin)
 
 lin_eff = skl.LinearRegression()
 lin_eff.fit(X_train_lin, Y_train_lin)

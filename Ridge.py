@@ -21,9 +21,7 @@ Y = df["LC50"]
 scaler = StandardScaler()
 X = scaler.fit_transform(X)
 
-X_train, X_test, Y_train, Y_test = skm.train_test_split(X,
-                                                        Y,
-                                                        random_state=0)
+X_train, X_test, Y_train, Y_test = skm.train_test_split(X,Y,random_state=0, test_size=0.33)
 
 alphas = np.logspace(-4, 3, 500)
 

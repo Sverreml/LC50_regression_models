@@ -29,7 +29,7 @@ dum_test_error = []
 
 for i in range(200):
 
-    X_train, X_test, Y_train, Y_test = skm.train_test_split(X, Y, random_state=i, test_size=0.66)
+    X_train, X_test, Y_train, Y_test = skm.train_test_split(X, Y, random_state=i, test_size=0.33)
 
     #Linear effect model
     X_train_lin = X_train.drop(columns = ["H050_d","C040_d","nN_d"])
@@ -65,6 +65,10 @@ Lin_train_error_mean = np.mean(Lin_train_error)
 Lin_test_error_mean = np.mean(Lin_test_error)
 dum_train_error_mean = np.mean(dum_train_error)
 dum_test_error_mean = np.mean(dum_test_error)
+Lin_train_var = np.var(Lin_train_error)
+Lin_test_var = np.var(Lin_test_error)
+dum_train_var = np.var(dum_train_error)
+dum_test_var = np.var(dum_test_error)
 
 #plotting
 fig, axs = plt.subplots(2, 2, sharey=True, tight_layout=True)
@@ -80,6 +84,15 @@ axs[0,0].axvline(Lin_train_error_mean, color='r', linestyle='--', label=f'mean: 
 axs[0,1].axvline(Lin_test_error_mean, color='r', linestyle='--', label=f'mean: {Lin_test_error_mean:.4f}')
 axs[1,0].axvline(dum_train_error_mean, color='r', linestyle='--', label=f'mean: {dum_train_error_mean:.4f}')
 axs[1,1].axvline(dum_test_error_mean, color='r', linestyle='--', label=f'mean: {dum_test_error_mean:.4f}')
+axs[0,0].text(0.97, 0.95, f'Var: {Lin_train_var:.4f}', transform=axs[0,0].transAxes,
+              ha='right', va='top', bbox=dict(facecolor='white', alpha=0.7, boxstyle='round,pad=0.3'))
+axs[0,1].text(0.97, 0.95, f'Var: {Lin_test_var:.4f}', transform=axs[0,1].transAxes,
+              ha='right', va='top', bbox=dict(facecolor='white', alpha=0.7, boxstyle='round,pad=0.3'))
+axs[1,0].text(0.97, 0.95, f'Var: {dum_train_var:.4f}', transform=axs[1,0].transAxes,
+              ha='right', va='top', bbox=dict(facecolor='white', alpha=0.7, boxstyle='round,pad=0.3'))
+axs[1,1].text(0.97, 0.95, f'Var: {dum_test_var:.4f}', transform=axs[1,1].transAxes,
+              ha='right', va='top', bbox=dict(facecolor='white', alpha=0.7, boxstyle='round,pad=0.3'))
+
 for ax in axs.flat:
     ax.set_xlabel('Mean Squared Error')
     ax.set_ylabel('Frequency')
@@ -89,7 +102,7 @@ plt.show()
 
 #t-test
 from scipy import stats
-t_train, p_train = stats.ttest_ind(Lin_train_error, dum_train_error)
-t_test, p_test = stats.ttest_ind(Lin_test_error, dum_test_error)
+t_train, p_train = stats.ttest_ind(Lin_train_error, dum_train_error, equal_var=False)
+t_test, p_test = stats.ttest_ind(Lin_test_error, dum_test_error, equal_var=False)
 print("Train t-test: t = {:.5f}, p = {:.5f}".format(t_train, p_train))
 print("Test t-test: t = {:.5f}, p = {:.5f}".format(t_test, p_test))
